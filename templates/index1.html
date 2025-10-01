@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportAI - Analizzatore Neurale delle Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00ffff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff41;
+            --neon-purple: #bf00ff;
+            --dark-bg: #0a0a0a;
+            --dark-card: #1a1a2e;
+            --dark-input: #16213e;
+            --gradient-main: linear-gradient(45deg, #ff006e, #00d4ff, #ff006e);
+            --gradient-accent: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--dark-bg);
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Sfondo animato con particelle */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(0, 255, 65, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .main-container {
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Header futuristico */
+        .cyber-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .cyber-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-cyan), 0 0 40px var(--neon-cyan);
+            }
+            to {
+                text-shadow: 0 0 30px var(--neon-pink), 0 0 40px var(--neon-pink), 0 0 50px var(--neon-pink);
+            }
+        }
+
+        .cyber-subtitle {
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        /* Card cyber */
+        .cyber-card {
+            background: rgba(26, 26, 46, 0.9);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 8px 32px rgba(0, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink), var(--neon-green), var(--neon-purple));
+            z-index: -1;
+            margin: -2px;
+            border-radius: inherit;
+            animation: border-animation 4s linear infinite;
+        }
+
+        @keyframes border-animation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cyber-card::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: rgba(26, 26, 46, 0.95);
+            border-radius: 18px;
+            z-index: -1;
+        }
+
+        /* Sezioni */
+        .section-header {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+
+        /* Form controls cyber */
+        .form-control, .form-select {
+            background: var(--dark-input);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Exo 2', sans-serif;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: var(--dark-input);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .form-label {
+            color: var(--neon-green);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Bottoni cyber */
+        .btn-cyber {
+            background: linear-gradient(45deg, var(--neon-pink), var(--neon-cyan));
+            border: none;
+            color: #fff;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
+        }
+
+        .btn-cyber::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-cyber:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 0, 255, 0.6);
+            color: #fff;
+        }
+
+        .btn-cyber:hover::before {
+            left: 100%;
+        }
+
+        .btn-outline-cyber {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-cyber:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-cyan);
+            transform: translateY(-2px);
+        }
+
+        /* Results section */
+        .results-container {
+            margin-top: 3rem;
+        }
+
+        .result-card {
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .result-high {
+            background: linear-gradient(135deg, rgba(0, 255, 65, 0.2), rgba(0, 255, 255, 0.2));
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+
+        .result-average {
+            background: linear-gradient(135deg, rgba(255, 255, 0, 0.2), rgba(255, 165, 0, 0.2));
+            border: 2px solid #ffff00;
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.5);
+        }
+
+        .result-low {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(191, 0, 255, 0.2));
+            border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 30px rgba(255, 0, 110, 0.5);
+        }
+
+        /* Loading animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .cyber-loader {
+            width: 80px;
+            height: 80px;
+            border: 4px solid transparent;
+            border-top: 4px solid var(--neon-cyan);
+            border-right: 4px solid var(--neon-pink);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .cyber-title {
+                font-size: 2.5rem;
+            }
+
+            .cyber-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Scrollbar personalizzata */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-pink);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header Cyber -->
+        <div class="cyber-header">
+            <h1 class="cyber-title">Sport-AI</h1>
+            <p class="cyber-subtitle">Analizzatore delle Performance</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn action-btn" onclick="loadExample()">
+                <i class="fas fa-flask me-1"></i>Esempio
+            </button>
+            <button class="btn action-btn" onclick="resetForm()">
+                <i class="fas fa-refresh me-1"></i>Ripristina
+            </button>
+        </div>
+
+        <!-- Form Card -->
+        <div class="cyber-card">
+            <form id="studentForm">
+                <!-- Demografia -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h3 class="section-header">
+                            <i class="fas fa-user me-2"></i>Dati Demografici
+                        </h3>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Età (anni)</label>
+                        <input type="number" class="form-control" name="Age" min="14" max="17" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Genere</label>
+                        <select class="form-select" name="Gender" required>
+                            <option value="">Seleziona genere...</option>
+                            <option value="Male">Maschio</option>
+                            <option value="Female">Femmina</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Anno Scolastico</label>
+                        <select class="form-select" name="Grade_Level" required>
+                            <option value="">Seleziona anno...</option>
+                            <option value="9th">Primo Anno</option>
+                            <option value="10th">Secondo Anno</option>
+                            <option value="11th">Terzo Anno</option>
+                            <option value="12th">Quarto Anno</option>
+                            <option value="13th">Quinto Anno</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Performance Fisiche -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h3 class="section-header">
+                            <i class="fas fa-dumbbell me-2"></i>Parametri di Performance Fisica
+                        </h3>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Indice Forza Muscolare (20-80)</label>
+                        <input type="number" class="form-control" name="Strength_Score" min="20" max="80" step="0.1" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Capacità Cardiorespiratoria (15-90)</label>
+                        <input type="number" class="form-control" name="Endurance_Score" min="15" max="90" step="0.1" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mobilità Articolare (5-100)</label>
+                        <input type="number" class="form-control" name="Flexibility_Score" min="5" max="100" step="0.1" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Coordinazione Motoria (20-85)</label>
+                        <input type="number" class="form-control" name="Speed_Agility_Score" min="20" max="85" step="0.1" required>
+                    </div>
+                </div>
+
+                <!-- Salute e Abilità -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h3 class="section-header">
+                            <i class="fas fa-heartbeat me-2"></i>Parametri Biometrici e Conoscenze
+                        </h3>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Indice Massa Corporea (15-35)</label>
+                        <input type="number" class="form-control" name="BMI" min="15" max="35" step="0.1" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Conoscenze Salute e Fitness (45-100)</label>
+                        <input type="number" class="form-control" name="Health_Fitness_Knowledge_Score" min="45" max="100" step="0.1" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Competenze Tecniche Sportive (25-100)</label>
+                        <input type="number" class="form-control" name="Skills_Score" min="25" max="100" step="0.1" required>
+                    </div>
+                </div>
+
+                <!-- Comportamento -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h3 class="section-header">
+                            <i class="fas fa-brain me-2"></i>Valutazione Comportamentale
+                        </h3>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Livello di Partecipazione</label>
+                        <select class="form-select" name="Class_Participation_Level" required>
+                            <option value="">Valuta partecipazione...</option>
+                            <option value="Low">Scarsa</option>
+                            <option value="Medium">Adeguata</option>
+                            <option value="High">Eccellente</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Frequenza Lezioni (75-100%)</label>
+                        <input type="number" class="form-control" name="Attendance_Rate" min="75" max="100" step="0.1" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Motivazione e Impegno</label>
+                        <select class="form-select" name="Motivation_Level" required>
+                            <option value="">Valuta motivazione...</option>
+                            <option value="Low">Bassa</option>
+                            <option value="Medium">Media</option>
+                            <option value="High">Alta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Valutazioni -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h3 class="section-header">
+                            <i class="fas fa-chart-line me-2"></i>Valutazioni Accademiche
+                        </h3>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Score Generale PE (40-100)</label>
+                        <input type="number" class="form-control" name="Overall_PE_Performance_Score" min="40" max="100" step="0.1" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Indice di Miglioramento (0-10)</label>
+                        <input type="number" class="form-control" name="Improvement_Rate" min="0" max="10" step="0.1" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Voto Finale Corrente</label>
+                        <select class="form-select" name="Final_Grade" required>
+                            <option value="">Seleziona voto...</option>
+                            <option value="A">A - Eccellente</option>
+                            <option value="B">B - Buono</option>
+                            <option value="C">C - Sufficiente</option>
+                            <option value="D">D - Insufficiente</option>
+                            <option value="F">F - Gravemente Insufficiente</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Voto Semestre Precedente</label>
+                        <select class="form-select" name="Previous_Semester_PE_Grade" required>
+                            <option value="">Seleziona voto...</option>
+                            <option value="A">A - Eccellente</option>
+                            <option value="B">B - Buono</option>
+                            <option value="C">C - Sufficiente</option>
+                            <option value="D">D - Insufficiente</option>
+                            <option value="F">F - Gravemente Insufficiente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Attività -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h3 class="section-header">
+                            <i class="fas fa-running me-2"></i>Attività Fisica Extrascolastica
+                        </h3>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Ore Settimanali di Attività (2-10)</label>
+                        <input type="number" class="form-control" name="Hours_Physical_Activity_Per_Week" min="2" max="10" step="0.1" required>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-cyber me-3">
+                        <i class="fas fa-robot me-2"></i>Analizza con AI
+                    </button>
+                    <button type="button" class="btn btn-outline-cyber" onclick="resetForm()">
+                        <i class="fas fa-refresh me-2"></i>Ripristina Form
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="results-container d-none">
+            <div class="cyber-card">
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay d-none">
+        <div class="loading-content">
+            <div class="cyber-loader"></div>
+            <div class="loading-text">Elaborazione Rete Neurale</div>
+            <p style="color: var(--neon-green); font-family: 'Orbitron', monospace;">
+                Analisi dei dati di performance...
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // JavaScript per V1 - Cyber Theme
+        document.getElementById('studentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            showLoading(true);
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Convert numbers
+            for (let key in data) {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input && input.type === 'number') {
+                    data[key] = parseFloat(data[key]);
+                }
+            }
+
+            try {
+                const response = await fetch('/predict-all', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showResults(result.results);
+                } else {
+                    showError('ERRORE SISTEMA: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Network Error:', error);
+                showError('CONNESSIONE ALLA RETE NEURALE FALLITA');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (show) {
+                overlay.classList.remove('d-none');
+            } else {
+                overlay.classList.add('d-none');
+            }
+        }
+
+        function showError(message) {
+            alert('⚠️ AVVISO CYBER: ' + message);
+        }
+
+        function showResults(results) {
+            const container = document.getElementById('resultContent');
+            const best = Object.keys(results).reduce((a, b) => 
+                results[a].confidence > results[b].confidence ? a : b
+            );
+
+            const bestResult = results[best];
+            const perfClass = bestResult.prediction === 'High Performer' ? 'high' : 
+                             bestResult.prediction === 'Average Performer' ? 'average' : 'low';
+
+            const icon = perfClass === 'high' ? 'fa-trophy' : 
+                        perfClass === 'average' ? 'fa-star' : 'fa-exclamation-triangle';
+
+            container.innerHTML = `
+                <div class="text-center mb-4">
+                    <h2 style="color: var(--neon-cyan); font-family: 'Orbitron', monospace; text-transform: uppercase;">
+                        <i class="fas ${icon} me-2"></i>Analisi Neurale Completata
+                    </h2>
+                </div>
+
+                <div class="result-card result-${perfClass}">
+                    <h3 style="font-family: 'Orbitron', monospace; text-transform: uppercase; margin-bottom: 1rem;">
+                        ${bestResult.prediction}
+                    </h3>
+                    <div style="font-size: 2rem; font-weight: bold; margin: 1rem 0;">
+                        ${bestResult.confidence.toFixed(1)}%
+                    </div>
+                    <p style="opacity: 0.8;">
+                        Modello Neurale: ${bestResult.model_used}
+                    </p>
+                </div>
+
+                <div class="row mt-4">
+                    ${Object.entries(results).map(([model, result]) => `
+                        <div class="col-md-4 mb-3">
+                            <div style="
+                                background: rgba(0, 255, 255, 0.1);
+                                border: 1px solid var(--neon-cyan);
+                                border-radius: 15px;
+                                padding: 1.5rem;
+                                text-align: center;
+                                transition: all 0.3s ease;
+                            " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0,255,255,0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <h6 style="color: var(--neon-green); text-transform: uppercase; font-weight: bold;">
+                                    ${model}
+                                </h6>
+                                <div style="
+                                    background: ${result.prediction === 'High Performer' ? 'var(--neon-green)' : 
+                                                 result.prediction === 'Average Performer' ? '#ffff00' : 'var(--neon-pink)'};
+                                    color: var(--dark-bg);
+                                    padding: 0.5rem 1rem;
+                                    border-radius: 20px;
+                                    margin: 1rem 0;
+                                    font-weight: bold;
+                                    text-transform: uppercase;
+                                    font-size: 0.8rem;
+                                ">
+                                    ${result.prediction}
+                                </div>
+                                <div style="color: var(--neon-cyan); font-size: 1.2rem; font-weight: bold;">
+                                    ${result.confidence.toFixed(1)}%
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-cyber" onclick="resetForm()">
+                        <i class="fas fa-redo me-1"></i>Nuova Analisi
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('results').classList.remove('d-none');
+            document.getElementById('results').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function loadExample() {
+            const example = {
+                Age: 16, Gender: 'Female', Grade_Level: '10th',
+                Strength_Score: 65.2, Endurance_Score: 72.8, Flexibility_Score: 68.5, Speed_Agility_Score: 61.3,
+                BMI: 21.5, Health_Fitness_Knowledge_Score: 85.7, Skills_Score: 78.9,
+                Class_Participation_Level: 'High', Attendance_Rate: 94.2, Motivation_Level: 'High',
+                Overall_PE_Performance_Score: 82.4, Improvement_Rate: 6.8,
+                Final_Grade: 'A', Previous_Semester_PE_Grade: 'B',
+                Hours_Physical_Activity_Per_Week: 7.5
+            };
+            fillForm(example);
+        }
+
+        function loadProfessor() {
+            const professor = {
+                Age: 16, Gender: 'Other', Grade_Level: '10th',
+                Strength_Score: 46.64, Endurance_Score: 46.43, Flexibility_Score: 50.36, Speed_Agility_Score: 51.65,
+                BMI: 29.24, Health_Fitness_Knowledge_Score: 83.47, Skills_Score: 62.55,
+                Class_Participation_Level: 'Medium', Attendance_Rate: 79.09, Motivation_Level: 'Medium',
+                Overall_PE_Performance_Score: 71.98, Improvement_Rate: 3.81,
+                Final_Grade: 'A', Previous_Semester_PE_Grade: 'B',
+                Hours_Physical_Activity_Per_Week: 6.14
+            };
+            fillForm(professor);
+        }
+
+        function fillForm(data) {
+            for (let key in data) {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input) input.value = data[key];
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('studentForm').reset();
+            document.getElementById('results').classList.add('d-none');
+        }
+    </script>
+</body>
+</html>
